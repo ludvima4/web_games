@@ -1,0 +1,54 @@
+<!--  "layout" sablona pro html stranky -->
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+        Minihry
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style_had.css' %}">
+    <script src="{% static 'js/main.js' %}" defer></script>
+
+
+</head>
+
+<body>
+    <nav style="display: flex; align-items: center; gap: 15px;">
+        <a href="/">
+            <span role="img" aria-label="Home" title="Home">home</span>
+        </a>
+        <a href="{% url 'score:score' %}">
+            <span role="img" aria-label="score" title="score">score</span>
+        </a>
+        {% if user.is_authenticated %}
+        <a href="/games">
+            <span role="img" aria-label="Games" title="Games">hry</span>
+        </a>
+        <form class="logout" action="{% url 'users:logout' %}" method="post" style="margin: 0;">
+            {% csrf_token %}
+            <button class="logout-button" aria-label="User Logout" title="User Logout"
+                style="background: none; border: none; cursor: pointer; font-size: inherit;">logout</button>
+        </form>
+        <span style="margin-left: auto;">Vítej, {{ user.username }}!</span>
+        <img src="{% static user.profile.image %}" alt="Profilový obrázek"
+            style="width: 60px; height: 60px; border-radius: 20%; object-fit: cover;">
+        {% else %}
+        <a href="{% url 'users:login' %}">
+            <span role="img" aria-label="User Login" title="User Login">login</span>
+        </a>
+        {% endif %}
+    </nav>
+    <main>
+        {% block content %}
+
+        {% endblock %}
+    </main>
+</body>
+
+</html>

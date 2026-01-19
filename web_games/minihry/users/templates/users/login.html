@@ -1,0 +1,34 @@
+<!--  "login" html stranka s "layout" sablonou -->
+{% extends "layout.html" %}
+
+
+
+{% block title %}
+Login page
+{% endblock %}
+
+
+
+{% block content %}
+    
+    <div class="form-with-validation">
+        <form  action="/users/login/" method="post">
+            <h1>   Log In    </h1>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="field-errors">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button class="form-submit">log In</button>
+        </form>
+             pokud ještě nemáte účet, zaregistrujte se 
+            <a href="{% url 'users:register' %}"><button class="form-submit">registrace</button></a> 
+    </div>
+            
+{% endblock %}

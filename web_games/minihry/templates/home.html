@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}
+Home
+{% endblock %}
+
+
+{% block content %}
+<div class="window-div home-container">
+    <header class="home-header">
+        <h1 class="main-title">Vítejte na našem webu!</h1>
+        <p class="subtitle">zde naleznete tři minihry s geodetickou tématikou</p>
+        {% if not user.is_authenticated %}
+        <div class="login-notice">
+            Pro přístup ke hrám se prosím <a href="{% url 'users:login' %}">přihlašte</a>.
+        </div>
+        {% endif %}
+    </header>
+
+    <section class="project-info">
+        <p>
+            Tento projekt vznikl v rámci předmětu<br>
+            <strong>Projekt - informatika</strong><br>
+            <span class="small-text">zimní semestr 2025/2026 • Geodezie a kartografie • FSv ČVUT v Praze</span>
+        </p>
+
+    </section>
+
+    <div class="content-grid">
+        <section class="team-section">
+            <h2>Členové skupiny</h2>
+            <ul class="member-list">
+                <li class="member-card">
+
+                    <div class="member-details">
+                        <strong>Martin Ludvík</strong>
+                        <span class="username">@ludvima4</span>
+                    </div>
+                </li>
+                <li class="member-card">
+                    <div class="member-details">
+                        <strong>Michaela Zachová</strong>
+                        <span class="username">@Zachomi1</span>
+                    </div>
+                </li>
+                <li class="member-card">
+                    <div class="member-details">
+                        <strong>Hynek Rasocha</strong>
+                        <span class="username">@Hynmaster</span>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <section class="tasks-section">
+            <h2>Zadání projektu</h2>
+            <div class="task-card">
+                <p><strong>Cíl:</strong> Tvorba miniher ve webovém prostředí s komplexní správou uživatelů - DJANGO.</p>
+                <ul class="task-list">
+                    <li>Implementace 3 webových miniher</li>
+                    <li>Registrace, login, logout, profilové obrázky</li>
+                    <li>Globální a individuální počítání skóre</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

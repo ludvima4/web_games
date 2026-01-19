@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>měření</title>
+    <link rel="stylesheet" href="{% static 'css/style_had.css' %}">
+
+</head>
+
+
+<div class="large_game-div">
+    <canvas id="gameCanvas" width="900" height="700"></canvas>
+
+    <script>
+        window.MAPA_IMG_SRC = "{% static 'img/had_mapa.jpg' %}";
+    </script>
+    <script src="{% static 'js/js_had.js' %}" defer></script>
+</div>

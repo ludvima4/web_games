@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+{% load static %}
+
+
+{% block title %}
+Registrace
+{% endblock %}
+
+
+
+{% block content %}
+<form class="form-with-validation" action="/users/register/" method="post">
+<h1>Registrace uživatele</h1>
+{% csrf_token %}
+{{ form.non_field_errors }}
+{% for field in form %}
+<div class="form-group">
+{{ field.label_tag }}
+{{ field }}
+{% if field.errors %}
+<div class="field-errors">{{ field.errors }}</div>
+{% endif %}
+</div>
+{% endfor %}
+
+<h3>Choose an Avatar</h3>
+<div class="avatar-selector">
+<input type="radio" name="avatar" id="av1" value="av_1.jpg" checked>
+<label for="av1">
+<img src="{% static 'avatars/av_1.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av2" value="av_2.jpg" checked>
+<label for="av2">
+<img src="{% static 'avatars/av_2.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av3" value="av_3.jpg" checked>
+<label for="av3">
+<img src="{% static 'avatars/av_3.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av4" value="av_4.jpg" checked>
+<label for="av4">
+<img src="{% static 'avatars/av_4.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av5" value="av_5.jpg" checked>
+<label for="av5">
+<img src="{% static 'avatars/av_5.jpg' %}">
+</label>
+<input type="radio" name="avatar" id="av6" value="av_6.jpg" checked>
+<label for="av6">
+<img src="{% static 'avatars/av_6.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av7" value="av_7.jpg" checked>
+<label for="av7">
+<img src="{% static 'avatars/av_7.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av8" value="av_8.jpg" checked>
+<label for="av8">
+<img src="{% static 'avatars/av_8.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av9" value="av_9.jpg" checked>
+<label for="av9">
+<img src="{% static 'avatars/av_9.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av10" value="av_10.jpg">
+<label for="av10">
+<img src="{% static 'avatars/av_10.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av11" value="av_11.jpg">
+<label for="av11">
+<img src="{% static 'avatars/av_11.jpg' %}">
+</label>
+
+<input type="radio" name="avatar" id="av1" value="av_12.jpg" checked>
+<label for="av12">
+<img src="{% static 'avatars/av_12.jpg' %}">
+</label>
+</div>
+
+<style>
+.avatar-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+/* Hide the actual radio circle */
+.avatar-selector input[type="radio"] { display: none; }
+/* Style the images */
+.avatar-selector label img {
+width: 60px;
+height: 60px;
+cursor: pointer;
+border: 3px solid transparent; /* Invisible border by default */
+border-radius: 50%;
+transition: 0.2s;
+}
+
+/* Highlight the image when its radio button is checked */
+.avatar-selector input[type="radio"]:checked + label img {
+border-color: #007bff; /* Blue selection ring */
+transform: scale(1.1);
+}
+</style>
+<button class="form-submit">registrovat</button>
+
+{% endblock %}

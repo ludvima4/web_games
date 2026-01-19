@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load static %}  
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MĚŘENÍ</title>
+    <link rel="stylesheet" href="{% static 'css/style_mereni.css' %}">
+</head>
+
+<body>
+    <script>
+        // definice cest k pozadim
+        const BACKGROUNDS = [
+            "{% static 'img/mereni_bg1.png' %}", 
+            "{% static 'img/mereni_bg2.png' %}", 
+            "{% static 'img/mereni_bg3.png' %}", 
+        ];
+    </script>
+    <!-- js -->
+    <script  src="{% static 'js/js_mereni.js' %}" defer></script>
+    <!-- Pozadí hry -->
+    <div id="game-background"></div>
+    <!-- Container pro cíle -->
+    <div id="targets-container"></div>
+    <!-- Canvas pro masku dalekohledu -->
+    <canvas id="scope-canvas"></canvas>
+    <!-- UI Overlay pro cíle a čas-->
+    <div class="hud-panel">
+        <div class="hud-item">
+            <span class="hud-label">Cíle</span>
+            <span class="hud-value" id="score-display">0 / 5</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">Čas</span>
+            <span class="hud-value" id="time-display">0.00</span>
+        </div>
+    </div>
+    <!-- Nitkový kříž (pohybuje se s myší pomocí JS) -->
+    <div id="crosshair"></div>
+    <div id="status-indicator"></div>
+    <!-- Úvodní obrazovka -->
+    <div id="start-screen">
+        <div class="result-box">
+            <h1>GEODETICKÁ VÝZVA</h1>
+            <p>Najdi a zaměř všech 5 cílů v co nejlepším čase!</p>
+            <button onclick="startGame()">START MĚŘENÍ</button>
+        </div>
+    </div>
+    <!-- Výsledná obrazovka -->
+    <div id="result-screen">
+        <div class="result-box">
+            <h1>MĚŘENÍ DOKONČENO</h1>
+            <div style="margin: 20px 0;">
+                <span>Výsledný čas:</span>
+                <h2 id="final-time">0.00s</h2>
+            </div>
+            <p id="comment">Vynikající práce, kolego.</p>
+            <button onclick="restartGame()">Nové Stanovisko</button>
+            <a href="/games"><button class="form-submit">Konec meření</button></a>
+        </div>
+    </div>
+
+</body>
+</html>
+
+ 
+
+
+
+
+   

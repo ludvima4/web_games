@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}
+Games
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="large_game-div">
+    <div class="game-div">
+        <img src="{% static 'img/dobble.png' %}" alt="My Website Logo" , width="100%">
+        <h1>Dobble</h1>
+        <a href="/dobble"><button class="form-submit">Hrát</button></a>
+    </div>
+
+    <div class="game-div">
+        <img src="{% static 'img/snake.png' %}" alt="My Website Logo" , width="100%">
+        <h1>Snake</h1>
+        <a href="/snake"><button class="form-submit">Hrát</button></a>
+    </div>
+
+    <div class="game-div">
+        <img src="{% static 'img/mereni.png' %}" alt="My Website Logo" , width="100%">
+        <h1>Měření</h1>
+        <a href="/mereni"><button class="form-submit">Hrát</button></a>
+    </div>
+
+</div>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,145 @@
+<!--  "o nas" html stranka s "layout" sablonou -->
+{% extends 'layout.html' %}
+
+{% block title %}
+score
+{% endblock %}
+
+{% block content %} <!-- zmena kontentu -->
+
+
+
+<div class="large_game-div">
+
+<h1>top výsledky</h1>
+
+</div>
+<div class="large_game-div">
+    <div class="game-div">
+
+        <h1>Dobble</h1>
+        <p>
+            {% if dobble_items %}
+        <ul>
+            {% for item in dobble_items %}
+            <li>
+                {{ item.user__username }}: {{ item.max_score }}b.  
+            </li>
+            {% endfor %}
+        </ul>
+        </p>
+        {% else %}
+        <p>Buď první!</p>
+        {% endif %}
+    </div>
+
+
+    <div class="game-div">
+        <h1>Snake</h1>
+        <p>
+            {% if snake_items %}
+        <ul>
+            {% for item in snake_items %}
+            <li>
+                {{ item.user__username }}: {{ item.max_score }}b.
+            </li>
+            {% endfor %}
+        </ul>
+        </p>
+        {% else %}
+        <p>Buď první!</p>
+        {% endif %}
+    </div>
+
+    <div class="game-div">
+        <h1>Měření</h1>
+        <p>
+            {% if mereni_items %}
+        <ul>
+            {% for item in mereni_items %}
+            <li>
+                {{ item.user__username }}: {{ item.max_score }}s
+            </li>
+            {% endfor %}
+        </ul>
+        </p>
+        {% else %}
+        <p>Buď první!</p>
+        {% endif %}
+    </div>
+
+
+
+
+</div>
+
+
+
+<div class="large_game-div">
+
+<h1>poslední výsledky</h1>
+
+</div>
+<div class="large_game-div">
+    <div class="game-div">
+
+        <h1>Dobble</h1>
+        <p>
+            {% if dobble_items_all %}
+        <ul>
+            {% for item in dobble_items_all %}
+            <li>
+                {{ item.user__username }}: {{ item.max_score }}b.
+            </li>
+            {% endfor %}
+        </ul>
+        </p>
+        {% else %}
+        <p>Buď první!</p>
+        {% endif %}
+    </div>
+
+
+    <div class="game-div">
+        <h1>Snake</h1>
+        <p>
+            {% if snake_items_all %}
+        <ul>
+            {% for item in snake_items_all %}
+            <li>
+                {{ item.user__username }}: {{ item.max_score }}b.
+            </li>
+            {% endfor %}
+        </ul>
+        </p>
+        {% else %}
+        <p>Buď první!</p>
+        {% endif %}
+    </div>
+
+    <div class="game-div">
+        <h1>Měření</h1>
+        <p>
+            {% if mereni_items_all %}
+        <ul>
+            {% for item in mereni_items_all %}
+            <li>
+                {{ item.user__username }}: {{ item.max_score }}s
+            </li>
+            {% endfor %}
+        </ul>
+        </p>
+        {% else %}
+        <p>Buď první!</p>
+        {% endif %}
+    </div>
+
+
+
+
+</div>
+
+
+
+
+{% endblock %}

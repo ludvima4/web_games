@@ -1,0 +1,232 @@
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --accent-color: #00ffcc; /* Barva měření */
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+            cursor: none; /* Skryjeme výchozí kurzor */
+        }
+
+        /* Pozadí hry */
+        #game-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        /* Hranoly (Cíle) */
+        .prism {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            z-index: 2;
+            cursor: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Vzhled hranolu - oranžový rámeček a reflexní střed */
+            background: radial-gradient(circle, #fff 10%, #333 30%, #000 70%);
+            border: 4px solid #ff4500; /* Geodetická oranžová */
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 69, 0, 0.8);
+            transform: translate(-50%, -50%); /* Centrování na souřadnice */
+        }
+
+        /* Stojan hranolu (volitelné pro vizuál) */
+        .prism::after {
+            content: '';
+            position: absolute;
+            top: 36px;
+            width: 4px;
+            height: 20px;
+            background-color: #555;
+            z-index: -1;
+        }
+
+        /* Efekt odlesku při najetí (simulace odrazky) */
+        .prism.measured {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+            opacity: 0.5;
+        }
+
+        /* Canvas pro efekt dalekohledu (černá maska) */
+        #scope-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none; /* Aby šlo klikat skrz masku na cíle */
+        }
+
+        /* HUD - Glassmorphism UI */
+        .hud-panel {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            padding: 15px 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            z-index: 20;
+            color: var(--text-color);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            pointer-events: none; /* Aby nepřekáželo v měření */
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hud-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .hud-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Nitkový kříž */
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%);
+            z-index: 15;
+            pointer-events: none;
+        }
+        
+        /* Čáry kříže */
+        #crosshair::before, #crosshair::after {
+            content: '';
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        /* Vertikální */
+        #crosshair::before {
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 100%;
+            transform: translateX(-50%);
+        }
+        /* Horizontální */
+        #crosshair::after {
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            transform: translateY(-50%);
+        }
+
+        /* Indikátor stavu měření */
+        #status-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 60px); /* Pod křížem */
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+            z-index: 16;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Obrazovka výsledků */
+        #result-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            cursor: default;
+        }
+
+        .result-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+
+        h1 { margin: 0 0 20px 0; font-weight: 300; }
+        h2 { font-size: 3rem; margin: 10px 0; color: var(--accent-color); }
+        
+        button {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 10px 30px;
+            font-size: 1.2rem;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        button:hover {
+            background: white;
+            color: black;
+        }
+        
+        /* Úvodní obrazovka */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            cursor: default;
+        }
+
+    
