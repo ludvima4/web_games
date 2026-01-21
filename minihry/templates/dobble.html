@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
@@ -8,8 +9,10 @@
     .canvas-wrap { display: flex; justify-content: center; gap: 40px; margin: 30px 0 20px 0;}
     canvas { background: white; border-radius: 50%; }
     #score, #timer { font-size: 26px; font-weight: bold; margin: 10px 40px; }
-    #start-btn { font-size: 1.2em; padding: 12px 42px; background: #27ae60; color: #fff; border: none; border-radius: 7px; margin: 24px;}
+    #start-btn, #stop-btn { font-size: 1.2em; padding: 12px 42px; border: none; border-radius: 7px; margin: 24px 10px;}
+    #start-btn { background: #27ae60; color: #fff; }
     #start-btn:disabled { background: #888; }
+    #stop-btn { background: #e74c3c; color: #fff; }
   </style>
 </head>
 <body>
@@ -21,6 +24,7 @@
   <div>
     <p>Najdi stejný symbol na obou kartách a klikni na něj!</p>
     <button id="start-btn">START HRU</button>
+    <button id="stop-btn">KONEC HRY</button>
   </div>
   <div class="canvas-wrap">
     <canvas id="card1" width="340" height="340"></canvas>
@@ -28,18 +32,110 @@
   </div>
 
   <script>
-    // Geodetické symboly jako emoji
-    const SYMBOLS = ["🗺️","📐","🧭","📏","🛰️","🌍","⛰️","🗻","🏔️","🌋",
-                     "🏞️","🗾","🌊","🏖️","🏝️","📍","📌","🎯","🔺","🔻",
-                     "⬆️","⬇️","⬅️","➡️","🔀"];
+    // URL stránky s vašimi hrami
+    const HOME_URL = '/games';
+
+    // CSRF token z cookies (PRO KOMUNIKACI S DJANGO)
+    // --- NOVÉ ---
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    // Odeslání skóre na backend
+    // --- NOVÉ ---
+    function sendScoreToBackend(finalScore) {
+      const csrftoken = getCookie('csrftoken');
+      // console.log(`Ukládám skóre: ${finalScore}`); // Pro debug
+      
+      fetch('/score/save_score/', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+            score: finalScore, 
+            hra: 'dobble' 
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              console.log('Skóre uloženo.');
+          } else {
+              console.error('Chyba při ukládání:', data.message);
+          }
+      })
+      .catch((error) => {
+          console.error('Chyba sítě:', error);
+      });
+    }
+
+    // každý symbol = přímo URL na obrázek
+    const SYMBOLS = [
+      "{% static 'img/dobble/image1.png' %}",
+      "{% static 'img/dobble/image2.png' %}",
+      "{% static 'img/dobble/image3.png' %}",
+      "{% static 'img/dobble/image4.png' %}",
+      "{% static 'img/dobble/image5.png' %}",
+      "{% static 'img/dobble/image6.png' %}",
+      "{% static 'img/dobble/image7.png' %}",
+      "{% static 'img/dobble/image8.png' %}",
+      "{% static 'img/dobble/image9.png' %}",
+      "{% static 'img/dobble/image10.png' %}",
+      "{% static 'img/dobble/image11.png' %}",
+      "{% static 'img/dobble/image12.png' %}",
+      "{% static 'img/dobble/image13.png' %}",
+      "{% static 'img/dobble/image14.png' %}",
+      "{% static 'img/dobble/image15.png' %}",
+      "{% static 'img/dobble/image16.png' %}",
+      "{% static 'img/dobble/image17.png' %}",
+      "{% static 'img/dobble/image18.png' %}",
+      "{% static 'img/dobble/image19.png' %}",
+      "{% static 'img/dobble/image20.png' %}",
+      "{% static 'img/dobble/image21.png' %}",
+      "{% static 'img/dobble/image22.png' %}",
+      "{% static 'img/dobble/image23.png' %}",
+      "{% static 'img/dobble/image24.png' %}",
+      "{% static 'img/dobble/image25.png' %}"
+    ];
+
+    const loadedImages = {};
+
+    // načteme všechny URL ze SYMBOLS
+    function loadImages(callback) {
+      let loaded = 0;
+      const total = SYMBOLS.length;
+      SYMBOLS.forEach(url => {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+          loadedImages[url] = img;
+          loaded++;
+          if (loaded === total) callback();
+        };
+      });
+    }
 
     const cardSize = 340;
     const center = cardSize / 2;
-    const outerRadius = 160;    // Vnější okraj
-    const innerRadius = 122;    // Kruhové uspořádání symbolů
-    
+    const outerRadius = 160;
+    const innerRadius = 122;
+
     let score = 0;
     let timeLimit = 60;
+    let remainingTime = timeLimit;
     let timer = null;
     let startTime = null;
     let gameRunning = false;
@@ -51,59 +147,45 @@
     const card1 = document.getElementById('card1');
     const card2 = document.getElementById('card2');
     const startBtn = document.getElementById('start-btn');
-    
-    function getRandomSymbols(count) {
-      let chosen = [];
-      let pool = [...SYMBOLS];
-      while (chosen.length < count && pool.length > 0) {
-        const idx = Math.floor(Math.random() * pool.length);
-        chosen.push(pool[idx]);
-        pool.splice(idx,1);
-      }
-      return chosen;
-    }
+    const stopBtn = document.getElementById('stop-btn');
 
     function generateCards() {
-  // Vybereme společný symbol
-  const common = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-  // První karta: 8 unikátních + společný symbol
-  let pool1 = SYMBOLS.filter(sym => sym !== common);
-  let card1_uniques = [];
-  while(card1_uniques.length < 8) {
-    let idx = Math.floor(Math.random() * pool1.length);
-    card1_uniques.push(pool1[idx]);
-    pool1.splice(idx,1);
-  }
-  let first = [...card1_uniques, common];
-  // Druhá karta: 8 jiných unikátních + společný symbol (bez duplikace z první)
-  let pool2 = SYMBOLS.filter(sym => !first.includes(sym) && sym !== common);
-  let card2_uniques = [];
-  while(card2_uniques.length < 8 && pool2.length>0) {
-    let idx = Math.floor(Math.random() * pool2.length);
-    card2_uniques.push(pool2[idx]);
-    pool2.splice(idx,1);
-  }
-  while(card2_uniques.length < 8) {
-    // Pokud už došly nové symboly (malý pool), náhodně doplníme něco co není společné ani v první kartě,
-    // Ale zaručíme, že "common" nebude dvakrát
-    let candidate;
-    do {
-      candidate = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-    } while (candidate === common || card2_uniques.includes(candidate));
-    card2_uniques.push(candidate);
-  }
-  let second = [...card2_uniques, common];
-  // Zamíchej pořadí
-  first.sort(()=>Math.random()-0.5);
-  second.sort(()=>Math.random()-0.5);
-  commonSymbol = common;
-  cardSymbols = [first, second];
-}
+      const common = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+      let pool1 = SYMBOLS.filter(sym => sym !== common);
+      let card1_uniques = [];
+      while(card1_uniques.length < 8) {
+        let idx = Math.floor(Math.random() * pool1.length);
+        card1_uniques.push(pool1[idx]);
+        pool1.splice(idx,1);
+      }
+      let first = [...card1_uniques, common];
+
+      let pool2 = SYMBOLS.filter(sym => !first.includes(sym) && sym !== common);
+      let card2_uniques = [];
+      while(card2_uniques.length < 8 && pool2.length>0) {
+        let idx = Math.floor(Math.random() * pool2.length);
+        card2_uniques.push(pool2[idx]);
+        pool2.splice(idx,1);
+      }
+      while(card2_uniques.length < 8) {
+        let candidate;
+        do {
+          candidate = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        } while (candidate === common || card2_uniques.includes(candidate));
+        card2_uniques.push(candidate);
+      }
+      let second = [...card2_uniques, common];
+
+      first.sort(()=>Math.random()-0.5);
+      second.sort(()=>Math.random()-0.5);
+      commonSymbol = common;
+      cardSymbols = [first, second];
+    }
+
     function drawCard(canvas, symbols) {
-      let ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d');
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
-      // Tlustý vnější modrý okraj
       ctx.beginPath();
       ctx.arc(center,center,outerRadius,0,2*Math.PI);
       ctx.lineWidth = 20;
@@ -111,29 +193,31 @@
       ctx.stroke();
       ctx.closePath();
 
-      // Světlé bílé pozadí uvnitř kruhu
       ctx.beginPath();
       ctx.arc(center,center,outerRadius-13,0,2*Math.PI);
       ctx.fillStyle = '#fff';
       ctx.fill();
       ctx.closePath();
 
-      // Symboly v kruhu (8 kolem + 1 uprostřed)
-      for(let i=0;i<symbols.length;i++) {
-        let fontSize = i===0?56:36+Math.floor(Math.random()*12);
-        ctx.font = `${fontSize}px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        let x,y;
-        if(i===0) {
+      for (let i = 0; i < symbols.length; i++) {
+        let x, y, size;
+        if (i === 0) {
           x = center;
           y = center;
+          size = 90;
         } else {
-          let angle = ((i-1)/8.0)*(2*Math.PI) - Math.PI/2;
+          const angle = ((i-1)/8.0)*(2*Math.PI) - Math.PI/2;
           x = center + innerRadius * Math.cos(angle);
           y = center + innerRadius * Math.sin(angle);
+          size = 70;
         }
-        ctx.fillText(symbols[i],x,y);
+
+        const url = symbols[i];
+        const img = loadedImages[url];
+
+        if (img) {
+          ctx.drawImage(img, x - size/2, y - size/2, size, size);  
+        }
       }
     }
 
@@ -147,31 +231,41 @@
       scoreEl.innerText = 'Skóre: 0';
       startBtn.disabled = true;
       gameRunning = true;
+      remainingTime = timeLimit;
       startTime = Date.now();
-      nextCards();
-      timerEl.innerText = `Čas: ${timeLimit}s`;
+      generateCards();
+      renderCards();
+      timerEl.innerText = `Čas: ${remainingTime}s`;
       timer = setInterval(updateTimer, 100);
     }
 
     function updateTimer() {
-      let t = timeLimit - Math.floor((Date.now()-startTime)/1000);
+      if (!gameRunning) return;
+      let elapsed = Math.floor((Date.now()-startTime)/1000);
+      let t = remainingTime - elapsed;
+      if (t < 0) t = 0;
       timerEl.innerText = `Čas: ${t}s`;
       if(t<=0) endGame();
     }
 
-    function nextCards() {
-      generateCards();
-      renderCards();
-    }
-
     function endGame() {
       clearInterval(timer);
+      timer = null;
       timerEl.innerText = "Čas: 0s";
       gameRunning = false;
       startBtn.disabled = false;
+
+      // --- NOVÉ: Uložení skóre ---
+      sendScoreToBackend(score);
+
       setTimeout(()=>{
         if(confirm(`KONEC HRY!\nTvoje skóre: ${score} bodů\nChceš hrát znovu?`)) startGame();
       }, 200);
+    }
+
+    // kliknutí na KONEC HRY – jen přesměrování
+    function stopGame() {
+      window.location.href = HOME_URL; 
     }
 
     function clickCanvas(which, e) {
@@ -182,16 +276,15 @@
       if(idx!==null && cardSymbols[which?1:0][idx]===commonSymbol) {
         score++;
         scoreEl.innerText = `Skóre: ${score}`;
-        nextCards();
+        generateCards();
+        renderCards();
       } else if(idx!==null) {
-        // Krátké záblesky červeně
         (which?card2:card1).style.border = "4px solid #e74c3c";
         setTimeout(()=>{(which?card2:card1).style.border = "";},120);
       }
     }
 
     function getSymbolAt(symbols, x, y) {
-      // Pomocná funkce, aby šlo kliknout na symbol
       let positions = [];
       for(let i=0;i<symbols.length;i++) {
         let pos;
@@ -210,13 +303,15 @@
       return null;
     }
 
-    card1.addEventListener('click',   clickCanvas.bind(null,0));
-    card2.addEventListener('click',   clickCanvas.bind(null,1));
+    card1.addEventListener('click', clickCanvas.bind(null,0));
+    card2.addEventListener('click', clickCanvas.bind(null,1));
     startBtn.addEventListener('click',startGame);
+    stopBtn.addEventListener('click',stopGame);
 
-    // Pro začátek zobrazit prázdné/neaktivní karty
-    generateCards();
-    renderCards();
+    loadImages(() => {
+      generateCards();
+      renderCards();
+    });
   </script>
 </body>
 </html>

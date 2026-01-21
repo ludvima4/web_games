@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-{% load static %}  
+{% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,13 +13,13 @@
     <script>
         // definice cest k pozadim
         const BACKGROUNDS = [
-            "{% static 'img/mereni_bg1.png' %}", 
-            "{% static 'img/mereni_bg2.png' %}", 
-            "{% static 'img/mereni_bg3.png' %}", 
+            "{% static 'img/mereni_bg1.png' %}",
+            "{% static 'img/mereni_bg2.png' %}",
+            "{% static 'img/mereni_bg3.png' %}",
         ];
     </script>
     <!-- js -->
-    <script  src="{% static 'js/js_mereni.js' %}" defer></script>
+    <script src="{% static 'js/js_mereni.js' %}" defer></script>
     <!-- Pozadí hry -->
     <div id="game-background"></div>
     <!-- Container pro cíle -->
@@ -62,11 +63,5 @@
     </div>
 
 </body>
+
 </html>
-
- 
-
-
-
-
-   

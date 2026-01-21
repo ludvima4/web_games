@@ -21,14 +21,14 @@
 <body>
     <nav style="display: flex; align-items: center; gap: 15px;">
         <a href="/">
-            <span role="img" aria-label="Home" title="Home">HOME</span>
+            <span role="img" aria-label="Home" title="Home">HOME |</span>
         </a>
         <a href="{% url 'score:score' %}">
-            <span role="img" aria-label="score" title="score">SCORE</span>
+            <span role="img" aria-label="score" title="score">SCORE |</span>
         </a>
         {% if user.is_authenticated %}
         <a href="/games">
-            <span role="img" aria-label="Games" title="Games">HRY</span>
+            <span role="img" aria-label="Games" title="Games">HRY |</span>
         </a>
         <form class="logout" action="{% url 'users:logout' %}" method="post" style="margin: 0;">
             {% csrf_token %}

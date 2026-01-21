@@ -88,8 +88,6 @@ function resetHry() {
     window.scoreSent = false;
 }
 
-// --- BACKEND KOMUNIKACE (DOPLNĚNO) ---
-
 // CSRF token z cookies
 function getCookie(name) {
     let cookieValue = null;
@@ -438,8 +436,8 @@ window.addEventListener('keydown', e => {
             resetHry();
         }
         if (e.key.toLowerCase() === 'q') {
-            resetHry();
-            gameState = 'START';
+            // TOTO VÁS PŘESMĚRUJE NA DOMOVSKOU STRÁNKU:
+            window.location.href = "/"; 
         }
     }
 });
